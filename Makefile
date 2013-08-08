@@ -1,11 +1,18 @@
-hoc1:	y.tab.o
-	cc y.tab.o -o hoc1
+CC=gcc
+YACC=yacc
+TGT=hoc2
+OBJS=y.tab.o
+CSRC=y.tab.c
+YACCSRC=hoc.y
 
-y.tab.o:	y.tab.c
-	cc -c y.tab.c
+${TGT}:	${OBJS}
+	${CC} ${OBJS} -o ${TGT}
 
-y.tab.c:	hoc.y
-	yacc hoc.y
+${OBJS}:	${CSRC}
+	${CC} -c ${CSRC}
+
+${CSRC}:	${YACCSRC}
+	${YACC} ${YACCSRC}
 
 clean:
-	rm *.o y.tab.c hoc1
+	rm ${OBJS} ${CSRC} ${TGT}
