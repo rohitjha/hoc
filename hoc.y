@@ -1,47 +1,42 @@
 %{
 #include <stdio.h>
 #include "hoc.h"
-extern double	Pow();
+#define code2(c1,c2)	code(c1); code(c2)
+#define code3(c1,c2,c3)	code(c1); code(c2); code(c3)
 %}
 %union {		/* stack type */
-	double	val;	/* actual value */
 	Symbol	*sym;	/* symbol table pointer */
+	Inst	*inst;	/* machine instruction */
 }
-%token	<val>	NUMBER
-%token	<sym>	VAR BLTIN UNDEF
-%type	<val>	expr asgn
+%token	<sym>	NUMBER VAR BLTIN UNDEF
 %right	'='
 %left	'+' '-'		/* left associative, same precedence */
-%left	'*' '/'		/* let associative, higher precedence */
+%left	'*' '/'		/* left associative, higher precedence */
 %left	UNARYPLUS UNARYMINUS	/* unary plus and minus */
 %right	'^'		/* exponentiation */
 %%
 list:	/* nothing */
 	| list '\n'
-	| list asgn '\n'
-	| list expr '\n'	{ printf("\t%.8g\n", $2); }
+	| list asgn '\n'	{ code2(pop, STOP); return 1; }
+	| list expr '\n'	{ code2(print, STOP); return 1; }
 	| list error '\n'	{ yyerrok; }
 	;
-asgn:	VAR '=' expr	{ $$ = $1->u.val=$3; $1->type = VAR; }
+asgn:	VAR '=' expr	{ code3(varpush, (Inst)$1, assign); }
 	;
-expr:	NUMBER
-	| VAR		{ if ($1->type == UNDEF)
-				execerror("undefined variable", $1->name);
-			$$ = $1->u.val;	}
+expr:	NUMBER		{ code2(constpush, (Inst)$1); }
+	| VAR		{ code3(varpush, (Inst)$1, eval); }
 	| asgn
-	| BLTIN '(' expr ')'	{ $$ = (*($1->u.ptr))($3); }
-	| expr '+' expr	{ $$ = $1 + $3; }
-	| expr '-' expr	{ $$ = $1 - $3; }
-	| expr '*' expr	{ $$ = $1 * $3; }
-	| expr '/' expr	{ $$ = $1 / $3; }
-	| expr '^' expr	{ $$ = Pow($1, $3); }
-	| '(' expr ')'	{ $$ = $2; }
-	| '+' expr %prec UNARYPLUS	{ $$ = $2; }
-	| '-' expr %prec UNARYMINUS	{ $$ = -$2; }
+	| BLTIN '(' expr ')'	{ code2(bltin, (Inst)$1->u.ptr); }
+	| '(' expr ')'
+	| expr '+' expr	{ code(add); }
+	| expr '-' expr	{ code(sub); }
+	| expr '*' expr	{ code(mul); }
+	| expr '/' expr	{ code(div); }
+	| expr '^' expr	{ code(power); }
+	| '+' expr %prec UNARYPLUS	{ code(positive); }
+	| '-' expr %prec UNARYMINUS	{ code(negate); }
 	;
 %%
-//#include <stdio.h>
-#include <stdlib.h>
 #include <ctype.h>
 #include <signal.h>
 #include <setjmp.h>
@@ -49,12 +44,14 @@ char	*progname;	/* for error messages */
 int	lineno = 1;
 jmp_buf	begin;
 
-main(int argc, char *argv[])	/* hoc2 */
+main(int argc, char *argv[])	/* hoc4 */
 {
 	progname = argv[0];
 	init();
 	setjmp(begin);
-	yyparse();
+	for (initcode(); yyparse(); initcode())
+		execute(prog);
+	return 0;
 }
 
 execerror(char *s, char *t)	/* recover from run-time error */
@@ -63,7 +60,7 @@ execerror(char *s, char *t)	/* recover from run-time error */
 	longjmp(begin, 0);
 }
 
-yylex()		/* hoc2 */
+yylex()		/* hoc4 */
 {
 	int c;
 
@@ -72,8 +69,10 @@ yylex()		/* hoc2 */
 	if (c == EOF)
 		return 0;
 	if (c == '.' || isdigit(c)) {	/* number */
+		double d;
 		ungetc(c, stdin);
-		scanf("%lf", &yylval.val);
+		scanf("%lf", &d);
+		yylval.sym = install("", NUMBER, d);
 		return NUMBER;
 	}
 	if (isalpha(c)) {

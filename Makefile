@@ -1,22 +1,24 @@
 CC=gcc
 YACC=yacc
 YFLAGS=-d	# force creation of y.tab.h
-TGT=hoc3
-OBJS=y.tab.o init.o math.o symbol.o
-CSRC=y.tab.c
+TGT=hoc4
+OBJS=y.tab.o code.o init.o math.o symbol.o
+#CSRC=y.tab.c
 YACCSRC=hoc.y
 
 ${TGT}:	${OBJS}
 	${CC} ${OBJS} -o ${TGT} -lm
 
-#need to check hoc.o
-hoc.o:	y.tab.c y.tab.h hoc.h
-	${CC} -c y.tab.c y.tab.h hoc.h
+y.tab.o:	y.tab.c y.tab.h
+	${CC} -c y.tab.c
 
-init.o:	init.c hoc.h y.tab.h
+code.o:	y.tab.h
+	${CC} -c code.c
+
+init.o:	y.tab.h
 	${CC} -c init.c
 
-symbol.o:	symbol.c hoc.h y.tab.h
+symbol.o:	y.tab.h
 	${CC} -c symbol.c
 
 math.o:	math.c
