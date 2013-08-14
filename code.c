@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include "hoc.h"
 #include "y.tab.h"
 
@@ -12,12 +13,14 @@ Inst	*pc;		/* program counter during execution */
 
 initcode()		/* initialize for code generation */
 {
+	//printf("initcode\n");
 	stackp = stack;
 	progp = prog;
 }
 
 push(Datum d)		/* push d onto stack */
 {
+	//printf("push\n");
 	if (stackp >= &stack[NSTACK])
 		execerror("stack overflow", (char *) 0);
 	*stackp++ = d;
@@ -25,6 +28,7 @@ push(Datum d)		/* push d onto stack */
 
 Datum pop()		/* pop and return top elem from stack */
 {
+	//printf("pop\n");
 	if (stackp <= stack)
 		execerror("stack underflow", (char *) 0);
 	return *--stackp;
@@ -36,13 +40,14 @@ Inst *code(Inst f)	/* install one instruction or operand */
 	if (progp >= &prog[NPROG])
 		execerror("program too big", (char *) 0);
 	*progp++ = f;
-	return *oprogp;
+	return oprogp;
 }
 
 execute(Inst *p)	/* run the machine */
 {
 	for (pc = p; *pc != STOP; )
 		(*(*pc++))();
+	//printf("execute\n");
 }
 
 constpush()		/* push constant onto stack */
@@ -50,6 +55,7 @@ constpush()		/* push constant onto stack */
 	Datum	d;
 	d.val = ((Symbol *)*pc++)->u.val;
 	push(d);
+	//printf("constpush\n");
 }
 
 varpush()		/* push variable onto stack */
@@ -57,6 +63,7 @@ varpush()		/* push variable onto stack */
 	Datum	d;
 	d.sym = (Symbol *)(*pc++);
 	push(d);
+	//printf("varpush\n");
 }
 
 add()		/* add top two elems on stack */
@@ -66,6 +73,7 @@ add()		/* add top two elems on stack */
 	d1 = pop();
 	d1.val += d2.val;
 	push(d1);
+	//printf("add\n");
 }
 
 sub()		/* subtract top two elems on stack */
@@ -75,6 +83,7 @@ sub()		/* subtract top two elems on stack */
 	d1 = pop();
 	d1.val -= d2.val;
 	push(d1);
+	//printf("subtract\n");
 }
 
 mul()		/* multiply top two elems on stack */
@@ -84,6 +93,7 @@ mul()		/* multiply top two elems on stack */
 	d1 = pop();
 	d1.val *= d2.val;
 	push(d1);
+	//printf("multiply\n");
 }
 
 div()		/* divide top two elems on stack */
@@ -93,6 +103,7 @@ div()		/* divide top two elems on stack */
 	d1 = pop();
 	d1.val /= d2.val;
 	push(d1);
+	//printf("divide\n");
 }
 
 power()		/* exponentiation operation on top two elems */
@@ -102,6 +113,7 @@ power()		/* exponentiation operation on top two elems */
 	d1 = pop();
 	d1.val = Pow(d1, d2);
 	push(d1);
+	//printf("exponentiation\n");
 }
 
 negate()	/* negation of topmost elem */
@@ -110,11 +122,13 @@ negate()	/* negation of topmost elem */
 	d = pop();
 	d.val = (-1) * d.val;
 	push(d);
+	//printf("negation\n");
 }
 
 positive()
 {
 	/* equivalent to a pop() and push() */
+	//printf("positive\n");
 }
 
 eval()		/* evaluate variable on stack */
@@ -125,6 +139,7 @@ eval()		/* evaluate variable on stack */
 		execerror("undefined variable", d.sym->name);
 	d.val = d.sym->u.val;
 	push(d);
+	//printf("eval\n");
 }
 
 assign()	/* assign top value to next value */
@@ -137,10 +152,12 @@ assign()	/* assign top value to next value */
 	d1.sym->u.val = d2.val;
 	d1.sym->type = VAR;
 	push(d2);
+	//printf("assign\n");
 }
 
 print()		/* pop top value from stack, print it */
 {
+	//printf("print\n");
 	Datum	d;
 	d = pop();
 	printf("\t%.8g\n", d.val);
@@ -152,4 +169,5 @@ bltin()		/* evaluate built-in on top of stack */
 	d = pop();
 	d.val = (*(double (*) ())(*pc++))(d.val);
 	push(d);
+	//printf("built-in\n");
 }

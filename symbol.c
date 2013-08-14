@@ -1,3 +1,4 @@
+#include <string.h>
 #include "hoc.h"
 #include "y.tab.h"
 
@@ -30,9 +31,9 @@ Symbol *install(char *s, int t, double d)	/* install s in symbol table */
 
 char *emalloc(unsigned int n)	/* check return from malloc */
 {
-	char	*p, *malloc();
+	char	*p;
 
-	p = malloc(n);
+	p = (char *)malloc(n);
 	if (p == 0)
 		execerror("out of memory", (char *) 0);
 	return p;
