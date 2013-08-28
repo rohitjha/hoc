@@ -32,6 +32,17 @@ static struct {		/* Built-ins */
 	0,	0
 };
 
+static struct {		/* Keywords */
+	char	*name;
+	int	kval;
+} keywords[] = {
+	"if",		IF,
+	"else",		ELSE,
+	"while",	WHILE,
+	"print",	PRINT,
+	0,		0,
+};
+
 init()	/* install constants and built-ins in table */
 {
 	int	i;
@@ -43,4 +54,6 @@ init()	/* install constants and built-ins in table */
 		s = install(builtins[i].name, BLTIN, 0.0);
 		s->u.ptr = builtins[i].func;
 	}
+	for (i = 0; keywords[i].name; i++)
+		install(keywords[i].name, keywords[i].kval, 0.0);
 }

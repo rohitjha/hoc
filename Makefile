@@ -2,7 +2,7 @@ CC=gcc
 CCFLAGS=-O3
 YACC=yacc
 YFLAGS=-d	# force creation of y.tab.h
-TGT=hoc4
+TGT=hoc5
 OBJS=y.tab.o code.o init.o math.o symbol.o
 YACCSRC=hoc.y
 
