@@ -1,0 +1,14 @@
+a=42
+b=73
+print a
+print b
+print (a*b)
+print (a+b)
+print (a-b)
+print (a/b)
+
+if (a > b) {
+	a = 2*a
+	print a
+}
+
