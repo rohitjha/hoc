@@ -11,14 +11,14 @@ Inst	prog[NPROG];	/* the machine */
 Inst	*progp;		/* next free spot for code generation */
 Inst	*pc;		/* program counter during execution */
 
-initcode()		/* initialize for code generation */
+void initcode()		/* initialize for code generation */
 {
 	//printf("initcode\n");
 	stackp = stack;
 	progp = prog;
 }
 
-push(Datum d)		/* push d onto stack */
+void push(Datum d)		/* push d onto stack */
 {
 	//printf("push\n");
 	if (stackp >= &stack[NSTACK])
@@ -43,14 +43,14 @@ Inst *code(Inst f)	/* install one instruction or operand */
 	return oprogp;
 }
 
-execute(Inst *p)	/* run the machine */
+void execute(Inst *p)	/* run the machine */
 {
 	for (pc = p; *pc != STOP; )
 		(*(*pc++))();
 	//printf("execute\n");
 }
 
-constpush()		/* push constant onto stack */
+void constpush()		/* push constant onto stack */
 {
 	Datum	d;
 	d.val = ((Symbol *)*pc++)->u.val;
@@ -58,7 +58,7 @@ constpush()		/* push constant onto stack */
 	//printf("constpush\n");
 }
 
-varpush()		/* push variable onto stack */
+void varpush()		/* push variable onto stack */
 {
 	Datum	d;
 	d.sym = (Symbol *)(*pc++);
@@ -66,7 +66,7 @@ varpush()		/* push variable onto stack */
 	//printf("varpush\n");
 }
 
-add()		/* add top two elems on stack */
+void add()		/* add top two elems on stack */
 {
 	Datum	d1, d2;
 	d2 = pop();
@@ -76,7 +76,7 @@ add()		/* add top two elems on stack */
 	//printf("add\n");
 }
 
-sub()		/* subtract top two elems on stack */
+void sub()		/* subtract top two elems on stack */
 {
 	Datum	d1, d2;
 	d2 = pop();
@@ -86,7 +86,7 @@ sub()		/* subtract top two elems on stack */
 	//printf("subtract\n");
 }
 
-mul()		/* multiply top two elems on stack */
+void mul()		/* multiply top two elems on stack */
 {
 	Datum	d1, d2;
 	d2 = pop();
@@ -96,7 +96,7 @@ mul()		/* multiply top two elems on stack */
 	//printf("multiply\n");
 }
 
-div()		/* divide top two elems on stack */
+void div()		/* divide top two elems on stack */
 {
 	Datum	d1, d2;
 	d2 = pop();
@@ -106,7 +106,7 @@ div()		/* divide top two elems on stack */
 	//printf("divide\n");
 }
 
-power()		/* exponentiation operation on top two elems */
+void power()		/* exponentiation operation on top two elems */
 {
 	Datum	d1, d2;
 	d2 = pop();
@@ -116,7 +116,7 @@ power()		/* exponentiation operation on top two elems */
 	//printf("exponentiation\n");
 }
 
-negate()	/* negation of topmost elem */
+void negate()	/* negation of topmost elem */
 {
 	Datum	d;
 	d = pop();
@@ -125,13 +125,13 @@ negate()	/* negation of topmost elem */
 	//printf("negation\n");
 }
 
-positive()
+void positive()
 {
 	/* equivalent to a pop() and push() */
 	//printf("positive\n");
 }
 
-eval()		/* evaluate variable on stack */
+void eval()		/* evaluate variable on stack */
 {
 	Datum	d;
 	d = pop();
@@ -142,7 +142,7 @@ eval()		/* evaluate variable on stack */
 	//printf("eval\n");
 }
 
-assign()	/* assign top value to next value */
+void assign()	/* assign top value to next value */
 {
 	Datum	d1, d2;
 	d1 = pop();
@@ -155,7 +155,7 @@ assign()	/* assign top value to next value */
 	//printf("assign\n");
 }
 
-print()		/* pop top value from stack, print it */
+void print()		/* pop top value from stack, print it */
 {
 	//printf("print\n");
 	Datum	d;
@@ -163,7 +163,7 @@ print()		/* pop top value from stack, print it */
 	printf("\t%.8g\n", d.val);
 }
 
-bltin()		/* evaluate built-in on top of stack */
+void bltin()		/* evaluate built-in on top of stack */
 {
 	Datum	d;
 	d = pop();
@@ -172,7 +172,7 @@ bltin()		/* evaluate built-in on top of stack */
 	//printf("built-in\n");
 }
 
-gt()
+void gt()
 {
 	Datum	d1, d2;
 	d2 = pop();
@@ -181,7 +181,7 @@ gt()
 	push(d1);
 }
 
-lt()
+void lt()
 {
 	Datum	d1, d2;
 	d2 = pop();
@@ -190,7 +190,7 @@ lt()
 	push(d1);
 }
 
-eq()
+void eq()
 {
         Datum   d1, d2;
         d2 = pop();
@@ -199,7 +199,7 @@ eq()
         push(d1);
 }
 
-ge()
+void ge()
 {
         Datum   d1, d2;
         d2 = pop();
@@ -208,7 +208,7 @@ ge()
         push(d1);
 }
 
-le()
+void le()
 {
 	Datum	d1, d2;
 	d2 = pop();
@@ -217,7 +217,7 @@ le()
 	push(d1);
 }
 
-ne()
+void ne()
 {
         Datum   d1, d2;
         d2 = pop();
@@ -226,7 +226,7 @@ ne()
         push(d1);
 }
 
-and()
+void and()
 {
         Datum   d1, d2;
         d2 = pop();
@@ -235,7 +235,7 @@ and()
         push(d1);
 }
 
-or()
+void or()
 {
         Datum   d1, d2;
         d2 = pop();
@@ -244,7 +244,7 @@ or()
         push(d1);
 }
 
-not()
+void not()
 {
         Datum   d;
         d = pop();
@@ -252,7 +252,7 @@ not()
         push(d);
 }
 
-whilecode()
+void whilecode()
 {
 	Datum	d;
 	Inst	*savepc = pc;	/* loop body */
@@ -267,7 +267,7 @@ whilecode()
 	pc = *((Inst **)(savepc+1));	/* next statement */
 }
 
-ifcode()
+void ifcode()
 {
 	Datum	d;
 	Inst	*savepc = pc;	/* then part */
@@ -281,7 +281,7 @@ ifcode()
 	pc = *((Inst **)(savepc+2));	/* next stmt */
 }
 
-prexpr()	/* print numeric value */
+void prexpr()	/* print numeric value */
 {
 	Datum	d;
 	d = pop();

@@ -19,8 +19,8 @@ typedef	int (*Inst)();	/* machine instruction */
 #define	STOP	(Inst) 0
 
 extern	Inst prog[], *progp, *code();
-extern	eval(), add(), sub(), mul(), div(), positive(), negate(), power();
-extern	assign(), bltin(), varpush(), constpush(), print();
-extern	prexpr();
-extern	gt(), lt(), eq(), ge(), le(), ne(), and(), or(), not();
-extern	ifcode(), whilecode();
+extern	void eval(), add(), sub(), mul(), div(), positive(), negate(), power();
+extern	void assign(), bltin(), varpush(), constpush(), print();
+extern	void prexpr();
+extern	void gt(), lt(), eq(), ge(), le(), ne(), and(), or(), not();
+extern	void ifcode(), whilecode();

@@ -87,7 +87,7 @@ char	*progname;	/* for error messages */
 int	lineno = 1;
 jmp_buf	begin;
 
-main(int argc, char *argv[])	/* hoc5 */
+int main(int argc, char *argv[])	/* hoc5 */
 {
 	progname = argv[0];
 	init();
@@ -97,7 +97,7 @@ main(int argc, char *argv[])	/* hoc5 */
 	return 0;
 }
 
-execerror(char *s, char *t)	/* recover from run-time error */
+void execerror(char *s, char *t)	/* recover from run-time error */
 {
 	warning(s, t);
 	longjmp(begin, 0);

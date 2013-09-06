@@ -1,5 +1,5 @@
 CC=gcc
-CCFLAGS=-O3
+CCFLAGS= -O3
 YACC=yacc
 YFLAGS=-d	# force creation of y.tab.h
 TGT=hoc5
